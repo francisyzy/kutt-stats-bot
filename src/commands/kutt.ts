@@ -4,17 +4,17 @@ import { Message } from "typegram";
 import { Markup } from "telegraf";
 
 const prisma = new PrismaClient();
-//Add addAPIKey commands
-const addAPIKey = () => {
+//Add kutt commands
+const kutt = () => {
   // bot.hears(/\/api_(.+)/, async (ctx) => {
-  //   let addAPIKey: string;
+  //   let kutt: string;
   //   if (ctx.message.chat.type === "private") {
-  //     addAPIKey = ctx.match[1];
+  //     kutt = ctx.match[1];
   //   } else {
   //     if (ctx.match[1].indexOf("@") !== -1) {
-  //       addAPIKey = ctx.match[1].split("@")[0];
+  //       kutt = ctx.match[1].split("@")[0];
   //     } else {
-  //       addAPIKey = ctx.match[1];
+  //       kutt = ctx.match[1];
   //     }
   //   }
   // });
@@ -31,20 +31,19 @@ const addAPIKey = () => {
     );
   });
   bot.action(/.+/, async (ctx) => {
-    const addAPIKey = ctx.match[0];
+    const kutt = ctx.match[0];
     //exit condition
-    if (addAPIKey === "NO") {
+    if (kutt === "NO") {
       return await ctx.editMessageText(
         "Ok, send me your API Key again if you need to set it",
       );
     }
-    console.log(ctx.from!.id);
     await prisma.user.update({
       where: { telegramId: ctx.from!.id },
-      data: { kuttAPIKey: addAPIKey },
+      data: { kuttAPIKey: kutt },
     });
     await ctx.editMessageText("Updated your API Key");
   });
 };
 
-export default addAPIKey;
+export default kutt;
