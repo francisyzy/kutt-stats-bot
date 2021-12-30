@@ -1,7 +1,7 @@
 {
-  "name": "telegraf-postgresql-template",
+  "name": "kutt-stats-bot",
   "version": "0.1.1",
-  "description": "Template for creating future telegram bot apps",
+  "description": "Check kutt stats",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/francisyzy/telegraf-PostgreSQL-template.git"
+    "url": "git+https://github.com/francisyzy/kutt-stats-bot.git"
   },
   "author": "francisyzy",
   "bugs": {
-    "url": "https://github.com/francisyzy/telegraf-PostgreSQL-template/issues"
+    "url": "https://github.com/francisyzy/kutt-stats-bot/issues"
   },
-  "homepage": "https://github.com/francisyzy/telegraf-PostgreSQL-template#readme",
+  "homepage": "https://github.com/francisyzy/kutt-stats-bot#readme",
   "engines": {
     "node": "15.x"
   },

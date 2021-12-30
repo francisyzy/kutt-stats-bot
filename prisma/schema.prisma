@@ -11,9 +11,9 @@ generator client {
 }
 
 model User {
-  telegramId   Int      @id
-  phone_number String?
-  name         String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now()) @updatedAt
+  telegramId Int      @id
+  kuttAPIKey String?
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }

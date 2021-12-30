@@ -9,6 +9,7 @@ import echo from "./commands/echo";
 
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import catchAll from "./commands/catch-all";
+import { getBotCommands } from "./utils/botCommands";
 
 //Production Settings
 if (process.env.NODE_ENV === "production") {
@@ -48,6 +49,7 @@ if (process.env.NODE_ENV === "production") {
   bot.use(Telegraf.log());
   bot.launch();
 }
+bot.telegram.setMyCommands(getBotCommands());
 
 helper();
 echo();
