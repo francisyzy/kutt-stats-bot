@@ -5,11 +5,11 @@ import config from "./config";
 
 import bot from "./lib/bot";
 import helper from "./commands/helper";
-import echo from "./commands/echo";
 
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import catchAll from "./commands/catch-all";
 import { getBotCommands } from "./utils/botCommands";
+import addAPIKey from "./commands/add-api";
 
 //Production Settings
 if (process.env.NODE_ENV === "production") {
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === "production") {
 bot.telegram.setMyCommands(getBotCommands());
 
 helper();
-echo();
+addAPIKey();
 
 //Catch all unknown messages/commands
 catchAll();

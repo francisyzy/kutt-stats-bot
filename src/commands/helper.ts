@@ -6,9 +6,30 @@ import { getBotCommands } from "../utils/botCommands";
 const prisma = new PrismaClient();
 //General helper commands
 const helper = () => {
-  //All bots start with /start
-  bot.start((ctx) => {
+  //Deep linking https://github.com/telegraf/telegraf/issues/504#issuecomment-420025006
+  bot.hears(/^\/start[ =](.+)$/, async (ctx) => {
     bot.telegram.setMyCommands(getBotCommands());
+    await prisma.user.upsert({
+      where: { telegramId: ctx.from!.id },
+      update: { name: ctx.from.first_name, kuttAPIKey: ctx.match[1] },
+      create: {
+        telegramId: ctx.from.id,
+        name: ctx.from.first_name,
+        kuttAPIKey: ctx.match[1],
+      },
+    });
+    return ctx.reply(
+      "Welcome to kutt stats bot. Your API Key has been added!",
+    );
+  });
+  //All bots start with /start
+  bot.start(async (ctx) => {
+    bot.telegram.setMyCommands(getBotCommands());
+    await prisma.user.upsert({
+      where: { telegramId: ctx.from!.id },
+      update: { name: ctx.from.first_name },
+      create: { telegramId: ctx.from.id, name: ctx.from.first_name },
+    });
     return ctx.reply("Welcome to kutt stats bot");
   });
 
