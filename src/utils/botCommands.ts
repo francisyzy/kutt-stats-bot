@@ -17,6 +17,10 @@ export function getBotCommands(): BotCommand[] {
       command: "list",
       description: "Get list of short links you have created",
     },
+    {
+      command: "status",
+      description: "Get list status of kutt.it",
+    },
   ];
   return BotCommand;
 }

@@ -2,6 +2,7 @@ import bot from "../lib/bot";
 import { PrismaClient } from "@prisma/client";
 import { toEscapeHTMLMsg } from "../utils/messageHandler";
 import { getBotCommands } from "../utils/botCommands";
+import { getHealth } from "../utils/getKutt";
 
 const prisma = new PrismaClient();
 //General helper commands
@@ -31,6 +32,14 @@ const helper = () => {
       create: { telegramId: ctx.from.id, name: ctx.from.first_name },
     });
     return ctx.reply("Welcome to kutt stats bot");
+  });
+
+  bot.command("status", async (ctx) => {
+    return ctx.reply(
+      (await getHealth())
+        ? "https://kutt.it/ is up"
+        : "https://kutt.it/ is down",
+    );
   });
 
   bot.command("account", async (ctx) => {

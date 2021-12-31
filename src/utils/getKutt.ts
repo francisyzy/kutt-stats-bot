@@ -4,7 +4,7 @@ import config from "../config";
 
 /**
  * Get list of rawList happening
- * @return {rawList} List of rawList
+ * @returns {Promise<rawList>} List of rawList
  */
 export async function getRawList(
   kuttAPIKey: string,
@@ -25,7 +25,7 @@ export async function getRawList(
 
 /**
  * Get rawStats of given uuid
- * @return {rawStats} Raw stats object
+ * @returns {Promise<rawStats>} Raw stats object
  */
 export async function getStats(
   kuttAPIKey: string,
@@ -39,4 +39,14 @@ export async function getStats(
   ).json()) as rawStats;
 
   return rawStats as rawStats;
+}
+
+/**
+ * Check if the API_URL returns 200
+ * @returns {Promise<boolean>} true if service is up, false if service is down
+ */
+export async function getHealth(): Promise<boolean> {
+  //https://docs.kutt.it/#tag/health
+  const { statusCode } = await got(`${config.API_URL}health`);
+  return statusCode === 200;
 }
