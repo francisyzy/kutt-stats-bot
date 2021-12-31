@@ -16,4 +16,6 @@ model User {
   name       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
+  domain     String   @default("kutt.it")
+  urlCache   String?
 }

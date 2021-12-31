@@ -1,9 +1,12 @@
 import got from "got";
-import { rawList, rawStats } from "../utils/types";
+import { rawList, rawStats, data } from "../utils/types";
 import config from "../config";
 
 /**
  * Get list of rawList happening
+ * @param kuttAPIKey API Key to communicate with kutt services
+ * @param limit number to paginate
+ * @param skip number to paginate
  * @returns {Promise<rawList>} List of rawList
  */
 export async function getRawList(
@@ -11,8 +14,6 @@ export async function getRawList(
   limit: number,
   skip: number,
 ): Promise<rawList> {
-  console.log("limit" + limit);
-  console.log("skip" + skip);
   const rawList = (await got(
     `${config.API_URL}links?limit=${limit}&skip=${skip}`,
     {
@@ -20,11 +21,13 @@ export async function getRawList(
     },
   ).json()) as rawList;
 
-  return rawList as rawList;
+  return rawList;
 }
 
 /**
  * Get rawStats of given uuid
+ * @param kuttAPIKey API Key to communicate with kutt services
+ * @param uuid of the stats of the url
  * @returns {Promise<rawStats>} Raw stats object
  */
 export async function getStats(
@@ -38,7 +41,7 @@ export async function getStats(
     },
   ).json()) as rawStats;
 
-  return rawStats as rawStats;
+  return rawStats;
 }
 
 /**
@@ -49,4 +52,30 @@ export async function getHealth(): Promise<boolean> {
   //https://docs.kutt.it/#tag/health
   const { statusCode } = await got(`${config.API_URL}health`);
   return statusCode === 200;
+}
+
+/**
+ * shortens an url
+ * @param kuttAPIKey API Key to communicate with kutt services
+ * @param domain domain of the short url
+ * @param url url to be shortened
+ * @returns {Promise<data>} data of the shortened URL
+ */
+export async function createLink(
+  kuttAPIKey: string,
+  domain: string,
+  url: string,
+): Promise<data> {
+  const data = (await got
+    .post(`${config.API_URL}links`, {
+      headers: { "X-API-KEY": kuttAPIKey },
+      json: {
+        target: url,
+        domain: domain,
+        reuse: true,
+      },
+    })
+    .json()) as data;
+
+  return data;
 }

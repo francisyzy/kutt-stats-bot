@@ -57,4 +57,4 @@ interface rawStats extends data {
   lastWeek: stats;
 }
 
-export { rawList, rawStats };
+export { rawList, rawStats, data };
