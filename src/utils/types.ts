@@ -57,4 +57,19 @@ interface rawStats extends data {
   lastWeek: stats;
 }
 
-export { rawList, rawStats, data };
+interface domain {
+  id: string;
+  banned: boolean;
+  address: string;
+  homepage: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface kuttUser {
+  apiKey: string;
+  email: string;
+  domains: domain[];
+}
+
+export { rawList, rawStats, data, kuttUser };

@@ -11,6 +11,7 @@ import catchAll from "./commands/catch-all";
 
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import { getBotCommands } from "./utils/botCommands";
+import setDomain from "./commands/set-domain";
 
 //Production Settings
 if (process.env.NODE_ENV === "production") {
@@ -48,6 +49,7 @@ bot.telegram.setMyCommands(getBotCommands());
 
 helper();
 invite();
+setDomain();
 kutt();
 
 //Catch all unknown messages/commands

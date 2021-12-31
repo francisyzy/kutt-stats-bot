@@ -1,5 +1,5 @@
 import got from "got";
-import { rawList, rawStats, data } from "../utils/types";
+import { rawList, rawStats, data, kuttUser } from "../utils/types";
 import config from "../config";
 
 /**
@@ -78,4 +78,17 @@ export async function createLink(
     .json()) as data;
 
   return data;
+}
+
+/**
+ * Get user object
+ * @param kuttAPIKey API Key to communicate with kutt services
+ * @returns {Promise<kuttUser} Kutt user object
+ */
+export async function getUser(kuttAPIKey: string): Promise<kuttUser> {
+  const kuttUser = (await got(`${config.API_URL}users`, {
+    headers: { "X-API-KEY": kuttAPIKey },
+  }).json()) as kuttUser;
+
+  return kuttUser;
 }
