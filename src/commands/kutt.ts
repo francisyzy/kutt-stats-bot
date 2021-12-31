@@ -11,10 +11,16 @@ const kutt = () => {
   bot.hears(/\/stats_(.+)/, async (ctx) => {
     const uuid = ctx.match[1].replace(/_/g, "-");
     const user = await prisma.user.findUnique({
-      where: { telegramId: ctx.from!.id! },
+      where: { telegramId: ctx.from!.id },
       select: { kuttAPIKey: true },
     });
-    const rawStats = await getStats(user!.kuttAPIKey!, uuid);
+    if (!user || !user.kuttAPIKey) {
+      return ctx.editMessageText(
+        "You have no API Key, please set your api key by pasting it in the chat",
+      );
+    }
+
+    const rawStats = await getStats(user.kuttAPIKey, uuid);
     return ctx.reply(formatStats(rawStats), {
       parse_mode: "HTML",
       disable_web_page_preview: true,
@@ -38,26 +44,29 @@ const kutt = () => {
         `Your API Key has been updated to ${apiKey}`,
         { parse_mode: "HTML" },
       );
-    } else if (match[0] === "¶") {
+    } else {
       const user = await prisma.user.findUnique({
-        where: { telegramId: ctx.from!.id! },
+        where: { telegramId: ctx.from!.id },
         select: { kuttAPIKey: true },
       });
+      if (!user || !user.kuttAPIKey) {
+        return ctx.editMessageText(
+          "You have no API Key, please set your api key by pasting it in the chat",
+        );
+      }
+
+      if (match[0] === "¶") {
       const uuid = match.replace("¶", "");
-      const rawStats = await getStats(user!.kuttAPIKey!, uuid);
+        const rawStats = await getStats(user.kuttAPIKey, uuid);
 
       await ctx.editMessageText(formatStats(rawStats), {
         parse_mode: "HTML",
         disable_web_page_preview: true,
       });
     } else if (match[0] === "«") {
-      const user = await prisma.user.findUnique({
-        where: { telegramId: ctx.from!.id! },
-        select: { kuttAPIKey: true },
-      });
       const skip = Number(match.replace("«", ""));
       const rawList = await getRawList(
-        user!.kuttAPIKey!,
+          user.kuttAPIKey,
         10 - skip,
         skip - 10,
       );
@@ -102,13 +111,9 @@ const kutt = () => {
         }),
       );
     } else if (match[0] === "»") {
-      const user = await prisma.user.findUnique({
-        where: { telegramId: ctx.from!.id! },
-        select: { kuttAPIKey: true },
-      });
       const skip = Number(match.replace("»", ""));
       const rawList = await getRawList(
-        user!.kuttAPIKey!,
+          user.kuttAPIKey,
         skip + 10,
         skip,
       );
@@ -152,6 +157,7 @@ const kutt = () => {
           },
         }),
       );
+      }
     }
   });
 
@@ -160,8 +166,13 @@ const kutt = () => {
       where: { telegramId: ctx.from!.id },
       select: { kuttAPIKey: true },
     });
+    if (!user || !user.kuttAPIKey) {
+      return ctx.reply(
+        "You have no API Key, please set your api key by pasting it in the chat",
+      );
+    }
 
-    const rawList = await getRawList(user!.kuttAPIKey!, 10, 0);
+    const rawList = await getRawList(user.kuttAPIKey, 10, 0);
 
     let btnList: (InlineKeyboardButton & {
       hide?: boolean | undefined;
