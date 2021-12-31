@@ -1,5 +1,6 @@
 import got from "got";
 import { rawList, rawStats } from "../utils/types";
+import config from "../config";
 
 /**
  * Get list of rawList happening
@@ -13,7 +14,7 @@ export async function getRawList(
   console.log("limit" + limit);
   console.log("skip" + skip);
   const rawList = (await got(
-    `https://kutt.it/api/v2/links?limit=${limit}&skip=${skip}`,
+    `${config.API_URL}links?limit=${limit}&skip=${skip}`,
     {
       headers: { "X-API-KEY": kuttAPIKey },
     },
@@ -31,7 +32,7 @@ export async function getStats(
   uuid: string,
 ): Promise<rawStats> {
   const rawStats = (await got(
-    `https://kutt.it/api/v2/links/${uuid}/stats`,
+    `${config.API_URL}links/${uuid}/stats`,
     {
       headers: { "X-API-KEY": kuttAPIKey },
     },

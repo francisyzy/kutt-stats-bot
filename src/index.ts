@@ -6,11 +6,11 @@ import config from "./config";
 import bot from "./lib/bot";
 import helper from "./commands/helper";
 import kutt from "./commands/kutt";
+import invite from "./commands/invite";
 import catchAll from "./commands/catch-all";
 
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import { getBotCommands } from "./utils/botCommands";
-import invite from "./commands/invite";
 
 //Production Settings
 if (process.env.NODE_ENV === "production") {
@@ -39,12 +39,6 @@ if (process.env.NODE_ENV === "production") {
     }
     return next();
   });
-  bot.launch({
-    webhook: {
-      domain: config.URL,
-      port: Number(config.PORT),
-    },
-  });
 } else {
   //Development logging
   bot.use(Telegraf.log());
@@ -58,7 +52,3 @@ kutt();
 
 //Catch all unknown messages/commands
 catchAll();
-
-// Enable graceful stop
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
