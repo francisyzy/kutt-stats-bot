@@ -10,6 +10,7 @@ import catchAll from "./commands/catch-all";
 
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import { getBotCommands } from "./utils/botCommands";
+import invite from "./commands/invite";
 
 //Production Settings
 if (process.env.NODE_ENV === "production") {
@@ -52,6 +53,7 @@ if (process.env.NODE_ENV === "production") {
 bot.telegram.setMyCommands(getBotCommands());
 
 helper();
+invite();
 kutt();
 
 //Catch all unknown messages/commands
