@@ -26,12 +26,18 @@ const helper = () => {
   //All bots start with /start
   bot.start(async (ctx) => {
     bot.telegram.setMyCommands(getBotCommands());
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { telegramId: ctx.from!.id },
       update: { name: ctx.from.first_name },
       create: { telegramId: ctx.from.id, name: ctx.from.first_name },
     });
-    return ctx.reply("Welcome to kutt stats bot");
+    return ctx.reply(
+      `Welcome to kutt stats bot ${
+        !user.kuttAPIKey
+          ? ". You have yet to set your API key, please set it by sending it into the chat."
+          : ". /help for more info"
+      }`,
+    );
   });
 
   bot.command("status", async (ctx) => {
@@ -56,7 +62,24 @@ const helper = () => {
       return ctx.reply("Please /start to create an account");
     }
   });
-  bot.help((ctx) => ctx.reply("Help message"));
+  bot.help(async (ctx) => {
+    const user = await prisma.user.findUnique({
+      where: { telegramId: ctx.from.id },
+    });
+    let returnMessage =
+      "Welcome to (<i>unofficial</i>) <a>Kutt.it</a> bot.\n";
+    if (!user?.kuttAPIKey) {
+      returnMessage += `<b>You have yet to add your API Key, <a href="https://kutt.it/login">get one here!</a></b>\n`;
+    }
+    returnMessage += "\n";
+    getBotCommands().forEach((command) => {
+      returnMessage += "/" + command.command + "\n";
+      returnMessage += "<i>" + command.description + "</i>\n\n";
+    });
+    return ctx.replyWithHTML(returnMessage, {
+      disable_web_page_preview: true,
+    });
+  });
 };
 
 export default helper;
