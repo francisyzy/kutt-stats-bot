@@ -81,6 +81,7 @@ const helper = () => {
       return ctx.reply("Please /start to create an account");
     }
   });
+
   bot.help(async (ctx) => {
     const user = await prisma.user.findUnique({
       where: { telegramId: ctx.from.id },
@@ -95,6 +96,8 @@ const helper = () => {
       returnMessage += "/" + command.command + "\n";
       returnMessage += "<i>" + command.description + "</i>\n\n";
     });
+    returnMessage += `<i>You can set your own custom domain by using this command <u>/domain_example.com</u> where example.com is a domain you have configured in the <a href="https://kutt.it/settings">Settings page</a></i>\n\n`;
+    returnMessage += `<i>For bug reports, please create an issue at <a href="http://go.francisyzy.com/kutt-bot-issues">Github</a></i>\n\n`;
     return ctx.replyWithHTML(returnMessage, {
       disable_web_page_preview: true,
     });
