@@ -66,6 +66,16 @@ const helper = () => {
         : "https://kutt.it/ is down",
     );
   });
+  bot.command("reset", async (ctx) => {
+    await prisma.user.update({
+      where: { telegramId: ctx.from!.id },
+      data: {
+        kuttAPIKey: null,
+        domain: "kutt.it",
+        customCache: null,
+      },
+    });
+  });
 
   bot.command("account", async (ctx) => {
     const user = await prisma.user.findUnique({

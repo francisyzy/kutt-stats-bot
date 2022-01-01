@@ -1,0 +1,37 @@
+service: kutt-bot-serverless
+
+useDotenv: true
+
+plugins:
+  - serverless-plugin-reducer
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: prod
+  region: us-east-1
+  memorySize: 128
+  timeout: 5
+  endpointType: regional
+
+  environment:
+    API_TOKEN: ${env:API_TOKEN}
+    DATABASE_URL: ${env:DATABASE_URL}
+    KUTT_API_TOKEN: ${env:KUTT_API_TOKEN}
+    NODE_ENV: production
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: webhook
+          method: post
+          cors: true
+  set-webhook:
+    handler: handler.setWebhook
+    events:
+      - http:
+          path: setWebhook
+          method: post
+          cors: true

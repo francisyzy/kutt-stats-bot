@@ -1,0 +1,49 @@
+name: Serverless Build and Deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Jobs
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      API_TOKEN: ${{ secrets.API_TOKEN }}
+      KUTT_API_TOKEN: ${{ secrets.KUTT_API_TOKEN }}
+      PRISMA_CLIENT_ENGINE_TYPE: "dataproxy"
+
+    # Steps
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: npm install dependencies
+        run: npm ci --include=dev
+
+      - name: npm build
+        run: npm run build
+
+      - name: npm prune
+        run: npm prune --production
+
+      - name: prune prisma
+        run: npm run removePrismaExtras
+
+      - name: Serverless
+        uses: serverless/github-action@master
+        with:
+          args: -c "serverless plugin install --name serverless-plugin-reducer && serverless deploy --verbose"
+          entrypoint: /bin/sh
+        env:
+          SLS_DEBUG: 1
