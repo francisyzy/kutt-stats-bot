@@ -20,7 +20,7 @@ const kutt = () => {
       select: { kuttAPIKey: true },
     });
     if (!user || !user.kuttAPIKey) {
-      return ctx.editMessageText(
+      return ctx.reply(
         "You have no API Key, please set your api key by pasting it in the chat",
       );
     }
@@ -52,7 +52,11 @@ const kutt = () => {
       if (await checkAPIKey(apiKey)) {
         await prisma.user.update({
           where: { telegramId: ctx.from!.id },
-          data: { kuttAPIKey: apiKey, urlCache: null },
+          data: {
+            kuttAPIKey: apiKey,
+            urlCache: null,
+            domain: "kutt.it",
+          },
         });
         return await ctx.editMessageText(
           `Your API Key has been updated to <code>${apiKey}</code>`,

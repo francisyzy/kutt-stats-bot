@@ -14,7 +14,11 @@ const helper = () => {
     if (await checkAPIKey(rawAPIKey)) {
       await prisma.user.upsert({
         where: { telegramId: ctx.from!.id },
-        update: { name: ctx.from.first_name, kuttAPIKey: rawAPIKey },
+        update: {
+          name: ctx.from.first_name,
+          kuttAPIKey: rawAPIKey,
+          domain: "kutt.it",
+        },
         create: {
           telegramId: ctx.from.id,
           name: ctx.from.first_name,
