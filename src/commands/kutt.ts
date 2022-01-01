@@ -9,6 +9,7 @@ import {
   getStats,
 } from "../utils/getKutt";
 import { formatStats } from "../utils/messageHandler";
+import config from "../config";
 
 const prisma = new PrismaClient();
 //Add kutt commands
@@ -73,14 +74,18 @@ const kutt = () => {
         where: { telegramId: ctx.from!.id },
         select: { urlCache: true, kuttAPIKey: true, domain: true },
       });
-      if (!user || !user.kuttAPIKey) {
+      if (!user) {
+        return ctx.editMessageText("/start to create an account");
+      }
+      const kuttAPIKey = user.kuttAPIKey || config.KUTT_API_TOKEN;
+      if (!kuttAPIKey) {
         return ctx.editMessageText(
           "You have no API Key, please set your api key by pasting it in the chat",
         );
       }
       if (user.urlCache) {
         const shortData = await createLink(
-          user.kuttAPIKey,
+          kuttAPIKey,
           user.domain,
           user.urlCache,
         );
@@ -94,6 +99,16 @@ const kutt = () => {
           }\n\n/stats_${shortData.id.replace(/-/g, "_")}`,
           { disable_web_page_preview: true },
         );
+        let returnString = `Ok, I have shortened your url\n${user.urlCache} => ${shortData.link}`;
+        if (user.kuttAPIKey) {
+          returnString += `\n\n/stats_${shortData.id.replace(
+            /-/g,
+            "_",
+          )}`;
+        }
+        return ctx.editMessageText(returnString, {
+          disable_web_page_preview: true,
+        });
       } else {
         return ctx.editMessageText(
           "An error occured, please try again",
@@ -278,8 +293,17 @@ const kutt = () => {
         where: { telegramId: ctx.from.id },
         data: { urlCache: incomingString },
       });
+      const user = await prisma.user.findUnique({
+        where: { telegramId: ctx.from!.id },
+        select: { kuttAPIKey: true },
+      });
+      let returnString = `Want to shorten this URL? <code>${incomingString}</code>`;
+      if (!user || !user.kuttAPIKey) {
+        returnString +=
+          "\n<i>You have no API Key, you will not be able to track stats for your link</i>";
+      }
       ctx.replyWithHTML(
-        `Want to shorten this URL? <pre>${incomingString}</pre>`,
+        returnString,
         Markup.inlineKeyboard([
           Markup.button.callback("Yes", "Ü"),
           Markup.button.callback("No", "ÜNO"),
