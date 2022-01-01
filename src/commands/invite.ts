@@ -1,7 +1,6 @@
 import bot from "../lib/bot";
 import { PrismaClient } from "@prisma/client";
 import { Markup } from "telegraf";
-import config from "../config";
 
 const prisma = new PrismaClient();
 //Add invite commands
@@ -12,17 +11,18 @@ const invite = () => {
       select: { kuttAPIKey: true },
     });
     if (user?.kuttAPIKey) {
+      const botDetails = await bot.telegram.getMe();
       ctx
         .reply(
           "Forward the following message to invite people to use this bot with your API Key",
         )
         .then(() => {
           return ctx.replyWithHTML(
-            `Hi, you have been invited to use @${config.BOT_USERNAME} <a href="https://t.me/${config.BOT_USERNAME}?start=${user.kuttAPIKey}">Press this or the button below to to start using the bot</a>`,
+            `Hi, you have been invited to use @${botDetails.username} <a href="https://t.me/${botDetails.username}?start=${user.kuttAPIKey}">Press this or the button below to to start using the bot</a>`,
             Markup.inlineKeyboard([
               Markup.button.url(
                 "Start",
-                `https://t.me/${config.BOT_USERNAME}?start=${user.kuttAPIKey}`,
+                `https://t.me/${botDetails.username}?start=${user.kuttAPIKey}`,
               ),
             ]),
           );
