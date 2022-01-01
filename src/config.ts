@@ -9,6 +9,7 @@ const config = {
   LOG_GROUP_ID: process.env.LOG_GROUP_ID,
   API_URL: process.env.API_URL || "https://kutt.it/api/v2/",
   KUTT_API_TOKEN: process.env.KUTT_API_TOKEN,
+  ADMIN_TELEGRAM_ID: Number(process.env.ADMIN_TELEGRAM_ID) || 0,
 };
 
 export default config;

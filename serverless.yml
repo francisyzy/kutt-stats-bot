@@ -18,6 +18,7 @@ provider:
     API_TOKEN: ${env:API_TOKEN}
     DATABASE_URL: ${env:DATABASE_URL}
     KUTT_API_TOKEN: ${env:KUTT_API_TOKEN}
+    ADMIN_TELEGRAM_ID: ${env:ADMIN_TELEGRAM_ID}
     NODE_ENV: production
 
 functions:

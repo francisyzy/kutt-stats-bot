@@ -12,6 +12,7 @@ import catchAll from "./commands/catch-all";
 import { toEscapeHTMLMsg } from "./utils/messageHandler";
 import { getBotCommands } from "./utils/botCommands";
 import setDomain from "./commands/set-domain";
+import admin from "./commands/admin";
 
 const index = () => {
   //Production Settings
@@ -49,6 +50,7 @@ const index = () => {
   bot.telegram.setMyCommands(getBotCommands());
 
   helper();
+  admin();
   invite();
   setDomain();
   kutt();
