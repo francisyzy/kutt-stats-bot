@@ -65,6 +65,7 @@ export async function createLink(
   kuttAPIKey: string,
   domain: string,
   url: string,
+  custom:string
 ): Promise<data> {
   const data = (await got
     .post(`${config.API_URL}links`, {
@@ -72,6 +73,7 @@ export async function createLink(
       json: {
         target: url,
         domain: domain,
+        customurl: custom,
       },
     })
     .json()

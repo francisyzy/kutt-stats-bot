@@ -72,7 +72,12 @@ const kutt = () => {
     } else if (match[0] === "Ü") {
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
-        select: { urlCache: true, kuttAPIKey: true, domain: true },
+        select: {
+          urlCache: true,
+          kuttAPIKey: true,
+          domain: true,
+          customCache: true,
+        },
       });
       if (!user) {
         return ctx.editMessageText("/start to create an account");
@@ -88,10 +93,11 @@ const kutt = () => {
           kuttAPIKey,
           user.domain,
           user.urlCache,
+          user.customCache || "",
         );
         await prisma.user.update({
           where: { telegramId: ctx.from!.id },
-          data: { urlCache: null },
+          data: { urlCache: null, customCache: null },
         });
         if (shortData.id === "error") {
           return ctx.editMessageText(
@@ -114,6 +120,12 @@ const kutt = () => {
           "An error occured, please try again",
         );
       }
+    } else if (match[0] === "©") {
+      await prisma.user.update({
+        where: { telegramId: ctx.from!.id },
+        data: { customCache: "©" },
+      });
+      return ctx.editMessageText("Send custom URL");
     } else {
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
@@ -287,15 +299,35 @@ const kutt = () => {
     const incomingString = `${
       (ctx.message as Message.TextMessage).text
     }`;
-    if (stringIsAValidUrl(incomingString)) {
+    const user = await prisma.user.findUnique({
+      where: { telegramId: ctx.from!.id },
+      select: { kuttAPIKey: true, customCache: true, urlCache: true },
+    });
+    if (user?.customCache && user?.customCache.indexOf("©") !== -1) {
+      const custom = incomingString.replace(/ /g, "-");
+      await prisma.user.update({
+        where: { telegramId: ctx.from.id },
+        data: { customCache: custom },
+      });
+      let returnString = `Want to shorten this URL? <code>${user?.urlCache}</code>`;
+      returnString += `\nCustom URL: ${custom}`;
+      if (!user || !user.kuttAPIKey) {
+        returnString +=
+          "\n<i>You have no API Key, you will not be able to track stats for your link</i>";
+      }
+      ctx.replyWithHTML(
+        returnString,
+        Markup.inlineKeyboard([
+          Markup.button.callback("Yes", "Ü"),
+          Markup.button.callback("No", "ÜNO"),
+          Markup.button.callback("Set custom URL", "©"),
+        ]),
+      );
+    } else if (stringIsAValidUrl(incomingString)) {
       //https://github.com/telegraf/telegraf/issues/138 can only fit 64 byte of data
       await prisma.user.update({
         where: { telegramId: ctx.from.id },
         data: { urlCache: incomingString },
-      });
-      const user = await prisma.user.findUnique({
-        where: { telegramId: ctx.from!.id },
-        select: { kuttAPIKey: true },
       });
       let returnString = `Want to shorten this URL? <code>${incomingString}</code>`;
       if (!user || !user.kuttAPIKey) {
@@ -307,6 +339,7 @@ const kutt = () => {
         Markup.inlineKeyboard([
           Markup.button.callback("Yes", "Ü"),
           Markup.button.callback("No", "ÜNO"),
+          Markup.button.callback("Set custom URL", "©"),
         ]),
       );
     } else {

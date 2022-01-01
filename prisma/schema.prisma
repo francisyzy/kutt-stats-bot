@@ -11,11 +11,12 @@ generator client {
 }
 
 model User {
-  telegramId Int      @id
-  kuttAPIKey String?
-  name       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-  domain     String   @default("kutt.it")
-  urlCache   String?
+  telegramId  Int      @id
+  kuttAPIKey  String?
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  domain      String   @default("kutt.it")
+  urlCache    String?
+  customCache String?
 }
