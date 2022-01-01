@@ -2,7 +2,12 @@ import bot from "../lib/bot";
 import { PrismaClient } from "@prisma/client";
 import { Message, InlineKeyboardButton } from "typegram";
 import { Markup } from "telegraf";
-import { createLink, getRawList, getStats } from "../utils/getKutt";
+import {
+  checkAPIKey,
+  createLink,
+  getRawList,
+  getStats,
+} from "../utils/getKutt";
 import { formatStats } from "../utils/messageHandler";
 
 const prisma = new PrismaClient();
@@ -44,14 +49,21 @@ const kutt = () => {
       );
     } else if (match[0] === "§") {
       const apiKey = match.replace("§", "");
-      await prisma.user.update({
-        where: { telegramId: ctx.from!.id },
-        data: { kuttAPIKey: apiKey },
-      });
-      await ctx.editMessageText(
-        `Your API Key has been updated to ${apiKey}`,
-        { parse_mode: "HTML" },
-      );
+      if (await checkAPIKey(apiKey)) {
+        await prisma.user.update({
+          where: { telegramId: ctx.from!.id },
+          data: { kuttAPIKey: apiKey, urlCache: null },
+        });
+        return await ctx.editMessageText(
+          `Your API Key has been updated to <code>${apiKey}</code>`,
+          { parse_mode: "HTML" },
+        );
+      } else {
+        return await ctx.editMessageText(
+          `Your API Key <code>${apiKey}</code> is not valid. Please <a href="https://kutt.it/login">login</a>, get a <a href="https://kutt.it/settings">API Key</a> and enter it into the chat`,
+          { parse_mode: "HTML" },
+        );
+      }
     } else if (match[0] === "Ü") {
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
@@ -271,7 +283,7 @@ const kutt = () => {
       );
     } else {
       ctx.replyWithHTML(
-        `Is this your API Key? <pre>${incomingString}</pre>`,
+        `Is this your API Key? <code>${incomingString}</code>`,
         Markup.inlineKeyboard([
           Markup.button.callback("Yes", "§" + incomingString),
           Markup.button.callback("No", "NO"),

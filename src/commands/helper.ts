@@ -2,7 +2,7 @@ import bot from "../lib/bot";
 import { PrismaClient } from "@prisma/client";
 import { toEscapeHTMLMsg } from "../utils/messageHandler";
 import { getBotCommands } from "../utils/botCommands";
-import { getHealth } from "../utils/getKutt";
+import { checkAPIKey, getHealth } from "../utils/getKutt";
 
 const prisma = new PrismaClient();
 //General helper commands
@@ -10,18 +10,33 @@ const helper = () => {
   //Deep linking https://github.com/telegraf/telegraf/issues/504#issuecomment-420025006
   bot.hears(/^\/start[ =](.+)$/, async (ctx) => {
     bot.telegram.setMyCommands(getBotCommands());
-    await prisma.user.upsert({
-      where: { telegramId: ctx.from!.id },
-      update: { name: ctx.from.first_name, kuttAPIKey: ctx.match[1] },
-      create: {
-        telegramId: ctx.from.id,
-        name: ctx.from.first_name,
-        kuttAPIKey: ctx.match[1],
-      },
-    });
-    return ctx.reply(
-      "Welcome to kutt stats bot. Your API Key has been added!",
-    );
+    const rawAPIKey = ctx.match[1];
+    if (await checkAPIKey(rawAPIKey)) {
+      await prisma.user.upsert({
+        where: { telegramId: ctx.from!.id },
+        update: { name: ctx.from.first_name, kuttAPIKey: rawAPIKey },
+        create: {
+          telegramId: ctx.from.id,
+          name: ctx.from.first_name,
+          kuttAPIKey: rawAPIKey,
+        },
+      });
+      return ctx.reply(
+        "Welcome to kutt stats bot. Your API Key has been added!",
+      );
+    } else {
+      await prisma.user.upsert({
+        where: { telegramId: ctx.from!.id },
+        update: { name: ctx.from.first_name },
+        create: {
+          telegramId: ctx.from.id,
+          name: ctx.from.first_name,
+        },
+      });
+      return ctx.replyWithHTML(
+        `Welcome to kutt stats bot. The API Key is invalid. Please <a href="https://kutt.it/login">login</a>, get a <a href="https://kutt.it/settings">API Key</a> and enter it again`,
+      );
+    }
   });
   //All bots start with /start
   bot.start(async (ctx) => {
@@ -34,7 +49,7 @@ const helper = () => {
     return ctx.reply(
       `Welcome to kutt stats bot ${
         !user.kuttAPIKey
-          ? ". You have yet to set your API key, please set it by sending it into the chat."
+          ? ". You have yet to set your API key, please set it by sending it into the chat. /help to learn how to get an API Key"
           : ". /help for more info"
       }`,
     );
@@ -69,7 +84,7 @@ const helper = () => {
     let returnMessage =
       "Welcome to (<i>unofficial</i>) <a>Kutt.it</a> bot.\n";
     if (!user?.kuttAPIKey) {
-      returnMessage += `<b>You have yet to add your API Key, <a href="https://kutt.it/login">get one here!</a></b>\n`;
+      returnMessage += `<b>You have yet to add your API Key, Please <a href="https://kutt.it/login">login</a>, get a <a href="https://kutt.it/settings">API Key</a> and enter it into the chat</b>\n`;
     }
     returnMessage += "\n";
     getBotCommands().forEach((command) => {

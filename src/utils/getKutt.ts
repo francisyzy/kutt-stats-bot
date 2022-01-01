@@ -83,7 +83,7 @@ export async function createLink(
 /**
  * Get user object
  * @param kuttAPIKey API Key to communicate with kutt services
- * @returns {Promise<kuttUser} Kutt user object
+ * @returns {Promise<kuttUser>} Kutt user object
  */
 export async function getUser(kuttAPIKey: string): Promise<kuttUser> {
   const kuttUser = (await got(`${config.API_URL}users`, {
@@ -91,4 +91,20 @@ export async function getUser(kuttAPIKey: string): Promise<kuttUser> {
   }).json()) as kuttUser;
 
   return kuttUser;
+}
+
+/**
+ * Validate API Key
+ * @param kuttAPIKey API Key to test if its valid
+ * @returns {Promise<boolean>} True if valid
+ */
+export async function checkAPIKey(
+  kuttAPIKey: string,
+): Promise<boolean> {
+  const { statusCode } = await got(`${config.API_URL}users`, {
+    headers: { "X-API-KEY": kuttAPIKey },
+    throwHttpErrors: false,
+  });
+
+  return statusCode === 200;
 }
