@@ -72,10 +72,28 @@ export async function createLink(
       json: {
         target: url,
         domain: domain,
-        reuse: true,
       },
     })
-    .json()) as data;
+    .json()
+    .catch((error) => {
+      // console.log(error);
+      const { response } = error;
+      console.log(response.body);
+      return {
+        id: "error",
+        address: response.body,
+        banned: true,
+        created_at: "error",
+        updated_at: "error",
+        password: true,
+        description: null,
+        expire_in: null,
+        target: "error",
+        visit_count: 0,
+        domain: "error",
+        link: "error",
+      };
+    })) as data;
 
   return data;
 }

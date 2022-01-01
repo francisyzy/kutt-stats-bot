@@ -93,12 +93,12 @@ const kutt = () => {
           where: { telegramId: ctx.from!.id },
           data: { urlCache: null },
         });
-        return ctx.editMessageText(
-          `Ok, I have shortened your url\n${user.urlCache} => ${
-            shortData.link
-          }\n\n/stats_${shortData.id.replace(/-/g, "_")}`,
-          { disable_web_page_preview: true },
-        );
+        if (shortData.id === "error") {
+          return ctx.editMessageText(
+            `An error has occured <code>${shortData.address}</code>`,
+            { parse_mode: "HTML" },
+          );
+        }
         let returnString = `Ok, I have shortened your url\n${user.urlCache} => ${shortData.link}`;
         if (user.kuttAPIKey) {
           returnString += `\n\n/stats_${shortData.id.replace(
