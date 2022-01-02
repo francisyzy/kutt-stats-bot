@@ -73,9 +73,9 @@ const helper = () => {
     });
     if (user) {
       return ctx.replyWithHTML(
-        `<b>Name</b>: ${toEscapeHTMLMsg(
-          user.name,
-        )} \n<b>API Key.</b>: ${user.kuttAPIKey}`,
+        `<b>Name</b>: ${toEscapeHTMLMsg(user.name)} 
+          \n<b>API Key.</b>: ${user.kuttAPIKey}
+          \n<b>Short link domain.</b>: ${user.domain}`,
       );
     } else {
       return ctx.reply("Please /start to create an account");

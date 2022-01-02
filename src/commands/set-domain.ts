@@ -36,7 +36,7 @@ const setDomain = () => {
       return ctx.reply(
         "Domain not in the list of domains\n" +
           domainList +
-          "\nMake sure you have set up your domain at https://kutt.it/settings before setting the domain into this bot",
+          "\nMake sure you have set up your domain at https://kutt.it/settings before setting the domain into this bot. /account to see your current domain setting.",
       );
     }
   });
