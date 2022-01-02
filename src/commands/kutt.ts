@@ -342,7 +342,7 @@ const kutt = () => {
           Markup.button.callback("Set custom URL", "©"),
         ]),
       );
-    } else {
+    } else if (!user?.kuttAPIKey) {
       ctx.replyWithHTML(
         `Is this your API Key? <code>${incomingString}</code>`,
         Markup.inlineKeyboard([
@@ -350,6 +350,8 @@ const kutt = () => {
           Markup.button.callback("No", "NO"),
         ]),
       );
+    } else {
+      ctx.reply("/help for more info");
     }
   });
 };
