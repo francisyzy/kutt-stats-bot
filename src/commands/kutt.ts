@@ -37,10 +37,13 @@ const kutt = () => {
     const match = ctx.match[0];
     //exit condition
     if (match === "NO") {
+      ctx.answerCbQuery("Discarding API key");
       return await ctx.editMessageText(
         "Ok, send me your API Key again if you need to set it",
       );
     } else if (match === "ÜNO") {
+      ctx.answerCbQuery("Not creating URL");
+      ctx.editMessageText("Refreshing, please wait…");
       await prisma.user.update({
         where: { telegramId: ctx.from!.id },
         data: { urlCache: null },
@@ -49,6 +52,8 @@ const kutt = () => {
         "Ok, will not create a short url",
       );
     } else if (match[0] === "§") {
+      ctx.answerCbQuery("Checking API key");
+      ctx.editMessageText("Validating API key, please wait…");
       const apiKey = match.replace("§", "");
       if (await checkAPIKey(apiKey)) {
         await prisma.user.update({
@@ -70,6 +75,8 @@ const kutt = () => {
         );
       }
     } else if (match[0] === "Ü") {
+      ctx.answerCbQuery("Creating link");
+      ctx.editMessageText("Creating link, please wait…");
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
         select: {
@@ -121,12 +128,16 @@ const kutt = () => {
         );
       }
     } else if (match[0] === "©") {
+      ctx.answerCbQuery("Setting up custom url");
+      ctx.editMessageText("Refreshing, please wait…");
       await prisma.user.update({
         where: { telegramId: ctx.from!.id },
         data: { customCache: "©" },
       });
       return ctx.editMessageText("Send custom URL");
     } else {
+      ctx.answerCbQuery("Getting information");
+      ctx.editMessageText("Refreshing, please wait…");
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
         select: { kuttAPIKey: true },
