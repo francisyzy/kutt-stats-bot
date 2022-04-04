@@ -37,12 +37,16 @@ const kutt = () => {
     const match = ctx.match[0];
     //exit condition
     if (match === "NO") {
-      ctx.answerCbQuery("Discarding API key");
+      ctx.answerCbQuery("Discarding API key").catch((err) => {
+        console.log(err);
+      });
       return await ctx.editMessageText(
         "Ok, send me your API Key again if you need to set it",
       );
     } else if (match === "ÜNO") {
-      ctx.answerCbQuery("Not creating URL");
+      ctx.answerCbQuery("Not creating URL").catch((err) => {
+        console.log(err);
+      });
       ctx.editMessageText("Refreshing, please wait…");
       await prisma.user.update({
         where: { telegramId: ctx.from!.id },
@@ -52,7 +56,9 @@ const kutt = () => {
         "Ok, will not create a short url",
       );
     } else if (match[0] === "§") {
-      ctx.answerCbQuery("Checking API key");
+      ctx.answerCbQuery("Checking API key").catch((err) => {
+        console.log(err);
+      });
       ctx.editMessageText("Validating API key, please wait…");
       const apiKey = match.replace("§", "");
       if (await checkAPIKey(apiKey)) {
@@ -75,7 +81,9 @@ const kutt = () => {
         );
       }
     } else if (match[0] === "Ü") {
-      ctx.answerCbQuery("Creating link");
+      ctx.answerCbQuery("Creating link").catch((err) => {
+        console.log(err);
+      });
       ctx.editMessageText("Creating link, please wait…");
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
@@ -128,7 +136,9 @@ const kutt = () => {
         );
       }
     } else if (match[0] === "©") {
-      ctx.answerCbQuery("Setting up custom url");
+      ctx.answerCbQuery("Setting up custom url").catch((err) => {
+        console.log(err);
+      });
       ctx.editMessageText("Refreshing, please wait…");
       await prisma.user.update({
         where: { telegramId: ctx.from!.id },
@@ -136,7 +146,9 @@ const kutt = () => {
       });
       return ctx.editMessageText("Send custom URL");
     } else {
-      ctx.answerCbQuery("Getting information");
+      ctx.answerCbQuery("Getting information").catch((err) => {
+        console.log(err);
+      });
       ctx.editMessageText("Refreshing, please wait…");
       const user = await prisma.user.findUnique({
         where: { telegramId: ctx.from!.id },
