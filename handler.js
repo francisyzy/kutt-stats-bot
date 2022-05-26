@@ -3,6 +3,7 @@
 const bot = require("./dist/lib/bot").default;
 
 const index = require("./dist/index").default;
+const ping = require("./dist/ping").default;
 
 const getResponseHeaders = () => {
   return {
@@ -18,6 +19,29 @@ module.exports.hello = async (event) => {
 
     await bot.handleUpdate(body);
 
+    return {
+      statusCode: 200,
+      headers: getResponseHeaders(),
+      body: JSON.stringify({
+        message: "Ok",
+      }),
+    };
+  } catch (err) {
+    console.log("Error: ", err);
+    return {
+      statusCode: err.statusCode ? err.statusCode : 500,
+      headers: getResponseHeaders(),
+      body: JSON.stringify({
+        error: err.name ? err.name : "Exception",
+        message: err.message ? err.message : "Unknown error",
+      }),
+    };
+  }
+};
+
+module.exports.ping = async (event) => {
+  try {
+    ping();
     return {
       statusCode: 200,
       headers: getResponseHeaders(),
