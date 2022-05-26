@@ -33,7 +33,7 @@ functions:
     handler: handler.ping
     events:
       - http:
-          path: webhook
+          path: ping
           method: post
           cors: true
   set-webhook:
