@@ -20,6 +20,7 @@ AWS_ACCESS_KEY_ID: serverless requires this to deploy
 AWS_SECRET_ACCESS_KEY: serverless requires this to deploy
 DATABASE_URL: https://www.prisma.io/dataplatform connection string
 KUTT_API_TOKEN: 'public' kutt token for other people to short link
+PING_PATH: aws lambda path to ping to prevent dB sleep
 ```
 
 </p>
